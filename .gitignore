@@ -2,3 +2,4 @@ ros/build/
 ros/build-1/
 ros/devel/
 .vscode/
+*.pyc
