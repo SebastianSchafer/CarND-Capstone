@@ -109,10 +109,10 @@ class DBWNode(object):
             rate.sleep()
 
     # define callback functions
-    def dbw_enabled(self, msg):
+    def dbw_enabled_cb(self, msg):
         self.dbw_enabled = msg
 
-    def velocity_cb(elf, msg):
+    def velocity_cb(self, msg):
         self.current_v = msg.twist.linear.x
 
     def twist_cb(self, msg):

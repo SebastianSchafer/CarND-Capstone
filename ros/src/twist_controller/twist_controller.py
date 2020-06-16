@@ -24,8 +24,8 @@ class Controller(object):
         self.throttle_controller = PID(kp, ki, kd, min_throttle, max_throttle)
 
         tau = 0.5 # for lp filter, given
-        ts = 1/50
-        self.v_lpf = LowPassFilter(tau, t)
+        ts = 1/50.
+        self.v_lpf = LowPassFilter(tau, ts)
 
         # need parameters to calculate accel/decel:
         self.vehicle_mass = vehicle_mass
