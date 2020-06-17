@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+from __future__ import division, print_function
 
 import rospy
 from std_msgs.msg import Bool
@@ -74,8 +75,8 @@ class DBWNode(object):
         self.dbw_enabled = None
         self.current_v = None # from v callback
         self.curr_angular_v = None
-        self.linear_v = None # from twist callback
-        self.angular_v = None
+        self.linear_v = None # target lin v
+        self.angular_v = None # target ang v
         self.throttle = 0
         self.steering = 0
         self.brake = 700

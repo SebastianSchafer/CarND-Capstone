@@ -1,3 +1,4 @@
+from __future__ import division, print_function
 import rospy
 from yaw_controller import YawController
 from lowpass import LowPassFilter
@@ -18,9 +19,9 @@ class Controller(object):
         # PID param values, mentioned in project description; possibly fine-tune:
         kp = 0.3
         ki = 0.1
-        kd = 0
-        min_throttle = 0
-        max_throttle = 0.2
+        kd = 0.
+        min_throttle = 0.
+        max_throttle = 0.3 # based on dbw_test rosbag
         self.throttle_controller = PID(kp, ki, kd, min_throttle, max_throttle)
 
         tau = 0.5 # for lp filter, given
@@ -68,6 +69,8 @@ class Controller(object):
         elif delta_v < 0 and throttle < 0.1:
             throttle = 0
             decel_actual = max(delta_v, self.decel_limit)
+            if abs(decel_actual) < self.brake_deadband:
+                decel_actual = 0
             # Assume that brake torque is calculated at wheel circumference (i.e. not at brake pad position)
             brake = abs(decel_actual) * self.vehicle_mass * self.wheel_radius
 
