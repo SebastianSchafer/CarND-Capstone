@@ -2,3 +2,9 @@ ros/build/
 ros/build-1/
 ros/devel/
 .vscode/
+
+ros/src/styx/bridge.pyc
+ros/src/styx/conf.pyc
+ros/src/tl_detector/light_classification/__init__.pyc
+ros/src/tl_detector/light_classification/tl_classifier.pyc
+ros/src/twist_controller/twist_controller.pyc
