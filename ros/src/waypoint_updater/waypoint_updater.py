@@ -64,7 +64,7 @@ class WaypointUpdater(object):
         # rospy.spin()
 
     def loop(self):
-        rate = rospy.Rate(50)
+        rate = rospy.Rate(10)
         
         while (rospy.is_shutdown):
             if (self.pose and self.base_waypoints and self.waypoints_tree and self.stopline_wp_index):
