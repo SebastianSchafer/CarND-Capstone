@@ -18,14 +18,17 @@ class TLClassifier(object):
                           2: 'green',
                           4: 'unknown'}
 
+        # Exported classifier model files
         MODEL_PATH = '/capstone/ros/src/tl_detector/light_classification/ssd_inception_v2/frozen_inference_graph.pb'
         LABELS_MAP_PATH = '/capstone/ros/src/tl_detector/light_classification/label_map_common.pbtxt'
         NUM_CLASSES = 3
 
+        # Label mappings
         label_map = label_map_util.load_labelmap(LABELS_MAP_PATH)
         categories = label_map_util.convert_label_map_to_categories(label_map, max_num_classes=NUM_CLASSES, use_display_name=True)
         self.category_index = label_map_util.create_category_index(categories)
 
+        # Load the trained classifier model
         self.detection_graph = tf.Graph()
         with self.detection_graph.as_default():
             od_graph_def = tf.GraphDef()
@@ -73,7 +76,6 @@ class TLClassifier(object):
                 detection_classes = self.detection_graph.get_tensor_by_name('detection_classes:0')
                 num_detections = self.detection_graph.get_tensor_by_name('num_detections:0')
 
-
                 # Expand dimensions since the model expects images to have shape: [1, None, None, 3]
                 image_np_expanded = np.expand_dims(image_np, axis=0)
 
@@ -87,8 +89,9 @@ class TLClassifier(object):
                 scores = np.squeeze(scores)
                 classes = np.squeeze(classes).astype(np.int32)
 
+                # Confidence level threshold. Only classify if over this threshold.
+                min_score_thresh = .50
 
-                min_score_thresh = .30
                 for i in range(boxes.shape[0]):
                     print(scores[i])
                     if scores is None or scores[i] > min_score_thresh:
