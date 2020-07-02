@@ -93,7 +93,6 @@ class TLClassifier(object):
                 min_score_thresh = .50
 
                 for i in range(boxes.shape[0]):
-                    print(scores[i])
                     if scores is None or scores[i] > min_score_thresh:
                         class_name = self.category_index[classes[i]]['name']
                         # print('{}'.format(class_name), scores[i])
