@@ -90,7 +90,7 @@ class TLClassifier(object):
                 classes = np.squeeze(classes).astype(np.int32)
 
                 # Confidence level threshold. Only classify if over this threshold.
-                min_score_thresh = .50
+                min_score_thresh = .25
 
                 for i in range(boxes.shape[0]):
                     if scores is None or scores[i] > min_score_thresh:
