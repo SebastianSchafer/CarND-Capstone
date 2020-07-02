@@ -12,7 +12,7 @@ import cv2
 import yaml
 from scipy.spatial import KDTree
 
-STATE_COUNT_THRESHOLD = 2
+STATE_COUNT_THRESHOLD = 3
 
 class TLDetector(object):
     def __init__(self):
@@ -168,10 +168,12 @@ class TLDetector(object):
                     closest_light = light
                     line_wp_idx = temp_wp_idx
                     
-        if closest_light:
-            
+        WAYPOINT_DISTANCE_THRESHOLD = 150
+        if closest_light and diff < WAYPOINT_DISTANCE_THRESHOLD:
+            print('Classifying Traffic Light')
             state = self.get_light_state(closest_light)
-            
+
+        print('Distance to next waypoint: {0}'.format(diff))
         return line_wp_idx, state
         
       #  return -1, TrafficLight.UNKNOWN
