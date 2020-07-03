@@ -21,7 +21,8 @@ class TLClassifier(object):
         # Exported classifier model files
 #         MODEL_PATH = '/capstone/ros/src/tl_detector/light_classification/ssd_inception_v2/frozen_inference_graph.pb'
 #         LABELS_MAP_PATH = '/capstone/ros/src/tl_detector/light_classification/label_map_common.pbtxt'
-        NUM_CLASSES = 3dirname = os.path.dirname(__file__)
+        NUM_CLASSES = 3
+        dirname = os.path.dirname(__file__)
         MODEL_PATH = os.path.join(dirname, 'ssd_inception_v2/frozen_inference_graph.pb')
         LABELS_MAP_PATH = os.path.join(dirname, 'label_map_common.pbtxt')
 
