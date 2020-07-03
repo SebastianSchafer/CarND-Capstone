@@ -37,10 +37,19 @@ class TLClassifier(object):
                 od_graph_def.ParseFromString(serialized_graph)
                 tf.import_graph_def(od_graph_def, name='')
 
+    # simple image scaling to (nR x nC) size
+    def scale(self, im, nR, nC):
+        nR0 = len(im)     # source number of rows 
+        nC0 = len(im[0])  # source number of columns 
+        return [[ im[int(nR0 * r / nR)][int(nC0 * c / nC)]  
+                    for c in range(nC)] for r in range(nR)]
+
     def load_image_into_numpy_array(self, image):
+        # Retrieve the current height and width of the image
         im_height, im_width = image.shape[:2]
-        #(im_width, im_height) = image.size
-        return image.reshape((im_height, im_width, 3)).astype(np.uint8)
+        image_dim = image.reshape((im_height, im_width, 3)).astype(np.uint8)
+        image_dim_resized = self.scale(image_dim, 512, 512)
+        return image_dim_resized
 
     def get_classification(self, image):
         """Determines the color of the traffic light in the image
