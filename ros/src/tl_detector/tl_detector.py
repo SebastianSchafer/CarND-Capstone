@@ -25,8 +25,6 @@ class TLDetector(object):
         self.camera_image = None
         self.lights = []
 
-        sub_pose = Subscriber('/current_pose', PoseStamped) # , self.pose_cb
-        sub_bwpts = rospy.Subscriber('/base_waypoints', Lane, self.waypoints_cb)
 
         '''
         /vehicle/traffic_lights provides you with the location of the traffic light in 3D map space and
@@ -35,10 +33,21 @@ class TLDetector(object):
         simulator. When testing on the vehicle, the color state will not be available. You'll need to
         rely on the position of the light and the camera image to predict it.
         '''
+        sub_bwpts = rospy.Subscriber('/base_waypoints', Lane, self.waypoints_cb)
         sub_tlights = rospy.Subscriber('/vehicle/traffic_lights', TrafficLightArray, self.traffic_cb)
-        sub_cam = Subscriber('/image_color', Image) # , self.image_cb
+        # Add option to sync subscribers:
+        SYNC = False
+        if SYNC:
+            sub_pose = Subscriber('/current_pose', PoseStamped) # , self.pose_cb
+            sub_cam = Subscriber('/image_color', Image) # , self.image_cb
+            sync_sub = ApproximateTimeSynchronizer([sub_pose, sub_cam], queue_size=10, slop=0.1)
+            sync_sub.registerCallback(self.sync_cb)
 
-        sync_sub = ApproximateTimeSynchronizer([sub_pose, sub_cam], queue_size=1, slop=0.1)
+        else:
+            sub_pose = rospy.Subscriber('/current_pose', PoseStamped, self.pose_cb) # 
+            sub_cam = rospy.Subscriber('/image_color', Image, self.image_cb) # 
+
+
 
         config_string = rospy.get_param("/traffic_light_config")
         self.config = yaml.load(config_string)
