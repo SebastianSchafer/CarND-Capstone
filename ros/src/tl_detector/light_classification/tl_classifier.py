@@ -8,6 +8,7 @@ from PIL import Image
 from utils import label_map_util
 import random
 import os
+from time import time
 class TLClassifier(object):
     def __init__(self):
         #TODO load classifier
@@ -39,6 +40,20 @@ class TLClassifier(object):
                 serialized_graph = fid.read()
                 od_graph_def.ParseFromString(serialized_graph)
                 tf.import_graph_def(od_graph_def, name='')
+
+        # Create session here instead of instantiating during inference
+        self.sess = tf.Session(graph = self.detection_graph)
+
+        # Definite input and output Tensors for detection_graph
+        self.image_tensor = self.detection_graph.get_tensor_by_name('image_tensor:0')
+        # Each box represents a part of the image where a particular object was detected.
+        self.detection_boxes = self.detection_graph.get_tensor_by_name('detection_boxes:0')
+        # Each score represent how level of confidence for each of the objects.
+        # Score is shown on the result image, together with the class label.
+        self.detection_scores = self.detection_graph.get_tensor_by_name('detection_scores:0')
+        self.detection_classes = self.detection_graph.get_tensor_by_name('detection_classes:0')
+        self.num_detections = self.detection_graph.get_tensor_by_name('num_detections:0')
+
 
     # simple image scaling to (nR x nC) size
     def scale(self, im, nR, nC):
@@ -72,48 +87,40 @@ class TLClassifier(object):
         # Save file for debugging purposes
         # Image.fromarray(image).save('{0}.png'.format(random.random() * 100000))
         
+        t0 = time()
         image_np = self.load_image_into_numpy_array(image)
 
-        with self.detection_graph.as_default():
-            with tf.Session(graph=self.detection_graph) as sess:
-                # Definite input and output Tensors for detection_graph
-                image_tensor = self.detection_graph.get_tensor_by_name('image_tensor:0')
-                
-                # Each box represents a part of the image where a particular object was detected.
-                detection_boxes = self.detection_graph.get_tensor_by_name('detection_boxes:0')
-                
-                # Each score represent how level of confidence for each of the objects.
-                # Score is shown on the result image, together with the class label.
-                detection_scores = self.detection_graph.get_tensor_by_name('detection_scores:0')
-                detection_classes = self.detection_graph.get_tensor_by_name('detection_classes:0')
-                num_detections = self.detection_graph.get_tensor_by_name('num_detections:0')
+        # Expand dimensions since the model expects images to have shape: [1, None, None, 3]
+        image_np_expanded = np.expand_dims(image_np, axis=0)
+        print('time to load image: ', time()-t0)
+        t0 = time()
+        # Actual detection.
+        (boxes, scores, classes, num) = self.sess.run(
+            [self.detection_boxes, 
+            self.detection_scores, 
+            self.detection_classes, 
+            self.num_detections],
+            feed_dict={self.image_tensor: image_np_expanded})
 
-                # Expand dimensions since the model expects images to have shape: [1, None, None, 3]
-                image_np_expanded = np.expand_dims(image_np, axis=0)
+        print('time for inference: ', time()-t0)
+        # Results
+        boxes = np.squeeze(boxes)
+        scores = np.squeeze(scores)
+        classes = np.squeeze(classes).astype(np.int32)
 
-                # Actual detection.
-                (boxes, scores, classes, num) = sess.run(
-                    [detection_boxes, detection_scores, detection_classes, num_detections],
-                    feed_dict={image_tensor: image_np_expanded})
+        # Confidence level threshold. Only classify if over this threshold.
+        min_score_thresh = .25
 
-                # Results
-                boxes = np.squeeze(boxes)
-                scores = np.squeeze(scores)
-                classes = np.squeeze(classes).astype(np.int32)
+        for i in range(boxes.shape[0]):
+            if scores is None or scores[i] > min_score_thresh:
+                class_name = self.category_index[classes[i]]['name']
+                # print('{}'.format(class_name), scores[i])
 
-                # Confidence level threshold. Only classify if over this threshold.
-                min_score_thresh = .25
-
-                for i in range(boxes.shape[0]):
-                    if scores is None or scores[i] > min_score_thresh:
-                        class_name = self.category_index[classes[i]]['name']
-                        # print('{}'.format(class_name), scores[i])
-
-                        if class_name == 'Green':
-                            predicted_state = TrafficLight.GREEN
-                        elif class_name == 'Red':
-                            predicted_state = TrafficLight.RED
-                        elif class_name == 'Yellow':
-                            predicted_state = TrafficLight.YELLOW
+                if class_name == 'Green':
+                    predicted_state = TrafficLight.GREEN
+                elif class_name == 'Red':
+                    predicted_state = TrafficLight.RED
+                elif class_name == 'Yellow':
+                    predicted_state = TrafficLight.YELLOW
 
         return predicted_state
