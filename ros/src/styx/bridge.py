@@ -178,11 +178,12 @@ class Bridge(object):
 
     def publish_camera(self, data):
         self.img_count += 1
-        if self.img_count >= NUM_IMAGES_TO_SKIP:
+        if self.img_count >= NUM_IMAGES_TO_SKIP: # TODO: probably take this out later?
             imgString = data["image"]
             image = PIL_Image.open(BytesIO(base64.b64decode(imgString)))
             image_array = np.asarray(image)
             image_message = self.bridge.cv2_to_imgmsg(image_array, encoding="rgb8")
+            image_message.header.stamp = rospy.Time.now()
             self.publishers['image'].publish(image_message)
             self.img_count = 0
 

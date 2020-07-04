@@ -128,6 +128,7 @@ class WaypointUpdater(object):
     def generate_front_lane(self, closest_waypoint_index):
         front_lane  = Lane()
         front_lane.header = self.base_waypoints.header
+        front_lane.header.stamp = rospy.Time.now()
         end_waypoint_index = closest_waypoint_index + LOOKAHEAD_WPS
         ref_waypoints = self.base_waypoints.waypoints[closest_waypoint_index : end_waypoint_index]
 
