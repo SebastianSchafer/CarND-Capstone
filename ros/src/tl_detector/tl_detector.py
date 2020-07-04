@@ -11,6 +11,7 @@ import tf
 import cv2
 import yaml
 from scipy.spatial import KDTree
+from message_filters import ApproximateTimeSynchronizer, Subscriber
 
 STATE_COUNT_THRESHOLD = 2
 
@@ -24,8 +25,8 @@ class TLDetector(object):
         self.camera_image = None
         self.lights = []
 
-        sub1 = rospy.Subscriber('/current_pose', PoseStamped, self.pose_cb)
-        sub2 = rospy.Subscriber('/base_waypoints', Lane, self.waypoints_cb)
+        sub_pose = Subscriber('/current_pose', PoseStamped) # , self.pose_cb
+        sub_bwpts = rospy.Subscriber('/base_waypoints', Lane, self.waypoints_cb)
 
         '''
         /vehicle/traffic_lights provides you with the location of the traffic light in 3D map space and
@@ -34,8 +35,10 @@ class TLDetector(object):
         simulator. When testing on the vehicle, the color state will not be available. You'll need to
         rely on the position of the light and the camera image to predict it.
         '''
-        sub3 = rospy.Subscriber('/vehicle/traffic_lights', TrafficLightArray, self.traffic_cb)
-        sub6 = rospy.Subscriber('/image_color', Image, self.image_cb)
+        sub_tlights = rospy.Subscriber('/vehicle/traffic_lights', TrafficLightArray, self.traffic_cb)
+        sub_cam = Subscriber('/image_color', Image) # , self.image_cb
+
+        sync_sub = ApproximateTimeSynchronizer([sub_pose, sub_cam], queue_size=1, slop=0.1)
 
         config_string = rospy.get_param("/traffic_light_config")
         self.config = yaml.load(config_string)
@@ -51,13 +54,18 @@ class TLDetector(object):
         self.last_wp = -1
         self.state_count = 0
 
-        # rospy.spin()
-        self.loop()
+        rospy.spin()
+        # self.loop()
 
     def loop(self):
         rate = rospy.Rate(10) # 50Hz
         while not rospy.is_shutdown():
             rate.sleep()
+
+    def sync_cb(self, pose, image):
+        '''Call pose and image cb; possibly add final_wpts for controlling rate'''
+        self.pose_cb(pose)
+        self.image_cb(image)
 
     def pose_cb(self, msg):
         self.pose = msg
