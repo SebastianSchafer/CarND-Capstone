@@ -17,9 +17,9 @@ class Controller(object):
         self.yaw_controller = YawController(wheel_base, steer_ratio, 0.1, max_lat_accel, max_steer_angle)
 
         # PID param values, mentioned in project description; possibly fine-tune:
-        kp = 0.3
-        ki = 0.1
-        kd = 0.
+        kp = 0.4
+        ki = 0.2
+        kd = 0.02
         min_throttle = 0.
         max_throttle = 0.3 # based on dbw_test rosbag
         self.throttle_controller = PID(kp, ki, kd, min_throttle, max_throttle)
