@@ -106,25 +106,28 @@ class TLClassifier(object):
             self.num_detections],
             feed_dict={self.image_tensor: image_np_expanded})
 
-        print('time for inference: ', time()-t0)
+        # print('time for inference: ', time()-t0)
         # Results
         boxes = np.squeeze(boxes)
         scores = np.squeeze(scores)
         classes = np.squeeze(classes).astype(np.int32)
 
         # Confidence level threshold. Only classify if over this threshold.
-        min_score_thresh = .25
+        min_score_thresh = .5
+        current_score = 0
 
         for i in range(boxes.shape[0]):
             if scores is None or scores[i] > min_score_thresh:
                 class_name = self.category_index[classes[i]]['name']
-                # print('{}'.format(class_name), scores[i])
-
-                if class_name == 'Green':
-                    predicted_state = TrafficLight.GREEN
-                elif class_name == 'Red':
-                    predicted_state = TrafficLight.RED
-                elif class_name == 'Yellow':
-                    predicted_state = TrafficLight.YELLOW
+                # Use only highest score; this only is reasonable if all lights are supposed to have smae color
+                if scores[i] > current_score:
+                        current_score = scores[i]
+                    # print('{}'.format(class_name), scores[i])
+                    if class_name == 'Green':
+                        predicted_state = TrafficLight.GREEN
+                    elif class_name == 'Red':
+                        predicted_state = TrafficLight.RED
+                    elif class_name == 'Yellow':
+                        predicted_state = TrafficLight.YELLOW
 
         return predicted_state

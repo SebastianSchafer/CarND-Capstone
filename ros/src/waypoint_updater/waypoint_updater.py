@@ -64,7 +64,7 @@ class WaypointUpdater(object):
         # rospy.spin()
 
     def loop(self):
-        rate = rospy.Rate(10)
+        rate = rospy.Rate(10) # rates >10Hz cause severe lag on Udacity workspace
         
         while (rospy.is_shutdown):
             if (self.pose and self.base_waypoints and self.waypoints_tree and self.stopline_wp_index):
