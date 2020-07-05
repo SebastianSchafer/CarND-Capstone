@@ -9,6 +9,8 @@ from utils import label_map_util
 import random
 import os
 from time import time
+from tensorflow.python.client import device_lib
+
 class TLClassifier(object):
     def __init__(self):
         #TODO load classifier
@@ -53,6 +55,12 @@ class TLClassifier(object):
         self.detection_scores = self.detection_graph.get_tensor_by_name('detection_scores:0')
         self.detection_classes = self.detection_graph.get_tensor_by_name('detection_classes:0')
         self.num_detections = self.detection_graph.get_tensor_by_name('num_detections:0')
+
+        dev_str = device_lib.list_local_devices()
+        if '/gpu:' in str(dev_str):
+            print('Found GPU to use for inference.')
+        else:
+            print('Tensorflow did not find a GPU for inference! Clasifying images will be very slow.')
 
 
     # simple image scaling to (nR x nC) size

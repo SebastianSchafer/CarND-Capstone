@@ -35,7 +35,7 @@ TYPE = {
     'image':Image
 }
 
-NUM_IMAGES_TO_SKIP = 4
+NUM_IMAGES_TO_SKIP = 5 # Yields 2Hz rate for camera image msg
 
 class Bridge(object):
     def __init__(self, conf, server):
@@ -178,7 +178,7 @@ class Bridge(object):
 
     def publish_camera(self, data):
         self.img_count += 1
-        if self.img_count >= NUM_IMAGES_TO_SKIP: # TODO: probably take this out later?
+        if self.img_count >= NUM_IMAGES_TO_SKIP: 
             imgString = data["image"]
             image = PIL_Image.open(BytesIO(base64.b64decode(imgString)))
             image_array = np.asarray(image)
