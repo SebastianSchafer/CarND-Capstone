@@ -87,12 +87,8 @@ class TLClassifier(object):
         # Save file for debugging purposes
         # Image.fromarray(image).save('{0}.png'.format(random.random() * 100000))
         
-        t0 = time()
-        image_np = self.load_image_into_numpy_array(image)
-
         # Expand dimensions since the model expects images to have shape: [1, None, None, 3]
-        image_np_expanded = np.expand_dims(image_np, axis=0)
-        print('time to load image: ', time()-t0)
+        image_np_expanded = np.expand_dims(image, axis=0)
         t0 = time()
         # Actual detection.
         (boxes, scores, classes, num) = self.sess.run(
