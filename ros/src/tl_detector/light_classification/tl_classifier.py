@@ -121,7 +121,7 @@ class TLClassifier(object):
                 class_name = self.category_index[classes[i]]['name']
                 # Use only highest score; this only is reasonable if all lights are supposed to have smae color
                 if scores[i] > current_score:
-                        current_score = scores[i]
+                    current_score = scores[i]
                     # print('{}'.format(class_name), scores[i])
                     if class_name == 'Green':
                         predicted_state = TrafficLight.GREEN
