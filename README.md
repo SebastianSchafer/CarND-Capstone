@@ -1,6 +1,31 @@
-This is the project repo for the final project of the Udacity Self-Driving Car Nanodegree: Programming a Real Self-Driving Car. For more information about the project, see the project introduction [here](https://classroom.udacity.com/nanodegrees/nd013/parts/6047fe34-d93c-4f50-8336-b70ef10cb4b2/modules/e1a23b06-329a-4684-a717-ad476f0d8dff/lessons/462c933d-9f24-42d3-8bdc-a08a5fc866e4/concepts/5ab4b122-83e6-436d-850f-9f4d26627fd9).
 
-Please use **one** of the two installation options, either native **or** docker installation.
+## Udacity Self-driving car ND system integration project
+
+### Team members
+* Sebastian Schafer
+* Sai Krishna Chada
+* Hamidreza Mirkhani
+* Eric Lok
+
+### Project overview
+This is the final project of the Udacit self-drivin car [ND](http://udacity.com/drive). This is a system-integration project, with the intent of completing a compete, ROS-based software suite that can safely drive both a [simulated](https://github.com/udacity/CarND-Capstone/releases) car around a track as well as guiding a real car. Unfortunately, the testing on Udacitys' Carla self-driving car (not to be confused with the autonomous vehicle simulator [carla](http://carla.org)) was not available due to Covid19 related restrictions when this project was finished, so this description focuses on the simulator implementation.
+The [original](https://github.com/udacity/CarND-Capstone) Udacity repo contains most of the framework necessary for this implementation, including several ROS nodes, launch files, and [Autoware](https://github.com/Autoware-AI/autoware.ai) libraries.
+![system](gfx/system_overview.png)
+As part of this project, we implemented one ROS node for each of the Perception, Planning, and Control sections of the system.
+
+### Perception: Traffic light detection node
+The traffic light detection was implemented using a single deep neural network and transfer learning. The traffic light detection node receives pose and camera image data and returns the predicted traffic light state, whcih is then used to determine whether the car should proceed or slow down.  We chose and end-to-end network implementation using the SSD inception_v2 [model](https://github.com/tensorflow/models/blob/master/research/object_detection/g3doc/detection_model_zoo.md#coco-trained-models) pretrained on the [COCO](https://cocodataset.org/#home) dataset. While one might prefer an approach of chained or segragated detectors in a real-world application, with an initial object detector returning bounding boxes around detected objects, followed by a dedicated light detection of only the area of the detected traffic light, this did not make much sense in the current project, as there were no other objects to detect. For transfer learning, we used [labelled](https://drive.google.com/drive/folders/1NXqHTnjVC1tPjAB5DajGc30uWk5VPy7C) data from a [team](https://github.com/marcomarasca/SDCND-SuperAI-Capstone/blob/master/README.md#traffic-light-detection) doing the project in 2018; the labelling process can be time-consuming wihtout adding much learning, so we were happy to find a good dataset available.
+While the training process is fairly straightforward using the tensorflow-api, a few steps are crucial to get the model working with good inference performance. We chose to train the model on Google Colab, which provides an even more convenient environment for tasks like this than AWS EC2. One drawback is that the project requires a tensorflow version of 1.3.0, which is not compatible with the oldest version available on Colab (1.15). Fortunately, tensorflow [provides](https://github.com/tensorflow/models/blob/master/research/object_detection/g3doc/exporting_models.md) an api to export models to other tensorflow versions for inference. We initially found that the model needed ~2s for inference on a workspace with a Nvidia K80 GPU, which clearly would not be sufficient to run the model and is also not consistent with expected inference times on the order of [50ms](https://github.com/tensorflow/models/blob/master/research/object_detection/g3doc/detection_model_zoo.md#coco-trained-models). While we could not confirm for certain, it seems that his might be related to an [issue](https://github.com/tensorflow/models/issues/3270) of frozen models not properly assigning an available gpu when used with an old version of tensorflow. While even trying to assign the gpu using `tf.device('gpu:0')` failed, intalling __only__ tensorflow-gpu 1.3 yielded a usable inference time of about 60ms.
+
+### Planning: Waypoint updater node
+...
+
+### Control: Drive-by-wire node
+...
+
+### Summary
+... Add link to either video or embed gif?
+
 
 ### Native Installation
 
