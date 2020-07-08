@@ -138,8 +138,8 @@ class TLDetector(object):
 
         # Get classification
         prediction = self.light_classifier.get_classification(cv_image)
-
-        print('light state is {0}'.format(self.light_classifier.light_map[light.state]))
+        if not light.state == None:
+            print('light state is {0}'.format(self.light_classifier.light_map[light.state]))
         print('predicted state is {0}'.format(self.light_classifier.light_map[prediction]))
         print('--------------------------------------')
         return prediction
