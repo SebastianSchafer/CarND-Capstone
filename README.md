@@ -2,10 +2,10 @@
 ## Udacity Self-driving car ND system integration project
 
 ### Team members
-* Sebastian Schafer
-* Sai Krishna Chada
-* Hamidreza Mirkhani
-* Eric Lok
+* Sebastian Schafer <seb.m.schafer@gmail.com>
+* Sai Krishna Chada saikrishna.4zeracing@gmail.com
+* Hamidreza Mirkhan Hamid.Mirkhani@gmail.com
+* Eric Lok ericlok@gmail.com
 
 ### Project overview
 This is the final project of the Udacit self-drivin car [ND](http://udacity.com/drive). This is a system-integration project, with the intent of completing a compete, ROS-based software suite that can safely drive both a [simulated](https://github.com/udacity/CarND-Capstone/releases) car around a track as well as guiding a real car. Unfortunately, the testing on Udacity's Carla self-driving car (not to be confused with the autonomous vehicle simulator [carla](http://carla.org)) was not available due to Covid19 related restrictions when this project was finished, so this description focuses on the simulator implementation.
